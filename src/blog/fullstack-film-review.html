@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <link rel="stylesheet" href="/assets/css/tw-compiled.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body class="font-mono bg-green-bg text-white max-w-screen">
+    <div class="md:max-w-3xl pt-2 px-4 mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between">
+            <a href="/"><h1 class="w-fit h-fit p-2 bg-green-fg text-green-bg text-xl">mackan.dev</h1></a>
+            <ul class="flex items-center gap-2 mt-2 sm:mt-0">
+                <a href="/projects.html"><li class="underline">projects</li></a>
+                <a href="#"><li class="underline">blog</li></a>
+                <a href="/resume.html"><li class="underline">resume</li></a>
+            </ul>
+        </div>
+        <div class="mt-4">
+            <h1 class="text-3xl">Developing a fullstack film review platform.</h1>
+            <p class="font-semibold text-lg mt-2">Day 1: Laying the Foundations</p>
+            <p>The journey of developing a new film review website began with the creation of an Entity-Relation Diagram in Draw SQL. My plan involved two main tables: one for movies and another for reviews, designed to allow a One-To-Many relationship with the movie ID linking the reviews. This structure promises to keep the data organized and accessible.</p>
+            <p>I initiated a GitHub repository to manage both the backend and frontend components. Sticking to my usual stack, I opted for Vue.js, Express, and Postgres, complemented by Tailwind CSS. The integration of Tailwind is a strategic choice to minimize the coding required for styling while ensuring it works seamlessly with the modular style of Vue.js, preventing CSS code from congesting each component.</p>
+            <p>The first day was packed with setting up the project structure, defining most of the backend API routes—planning to add more as needed—and laying down the first 150-200 lines of code. I also set up the database and sketched out the initial design of the website's interface. Additionally, I established a debugging and testing environment using Insomnia, setting a solid foundation for the days to follow.</p>
+            <p>Day 2: Building and Expanding</p>
+            <p>On the second day, I expanded the API by adding more routes for individual requests, including delete and post functionalities. With these additions, the API was nearly complete. I also managed to create the first three pages of the frontend and styled them to match the envisioned aesthetic.</p>
+            <p>Each user profile on the site is represented by a random AI-generated image, thanks to the pravatar.cc API. Furthermore, I encountered a limitation with Prisma's support for nested aggregation, necessitating the creation of a raw JOIN SQL query to calculate the average score for directors.</p>
+            <p>To facilitate easy setup on new devices, I crafted a `seed.js` script using ChatGPT, enabling automatic database population with sample data at startup.</p>
+            <p>With the core functionality in place, only a few elements remain. These include finalizing the User and Director pages and linking all components more robustly. I will also document all frontend and API routes in the Readme.md file.</p>
+            <h2>Routes Overview</h2>
+            <h3>Frontend Routes:</h3>
+            <ul>
+                <li>/: Home page of the website</li>
+                <li>/reviews: Page listing movie reviews</li>
+                <li>/users: Page listing users</li>
+                <li>/directors: Page listing film directors</li>
+                <li>/directors/:id: Detailed view of a specific director</li>
+                <li>/movies/:id: Detailed view of a specific movie</li>
+                <li>/users/:name: Detailed view of a specific user</li>
+            </ul>
+            <h3>Backend Routes:</h3>
+            <ul>
+                <li>POST /movies: Create a new movie</li>
+                <li>POST /reviews: Create a new review</li>
+                <li>POST /directors: Create a new director</li>
+                <li>GET /directors: Get all directors with aggregated data</li>
+                <li>GET /movies: Get all movies with directors included</li>
+                <li>GET /directors/:id: Get a specific director with their movies</li>
+                <li>GET /reviews: Get all reviews, supports pagination</li>
+                <li>GET /users/:name: Get all reviews by a specific user</li>
+                <li>DELETE /directors/:id: Delete a specific director</li>
+                <li>DELETE /movies/:id: Delete a specific movie</li>
+                <li>GET /movies/:id: Get a specific movie with details and reviews</li>
+                <li>DELETE /reviews/:id: Delete a specific review</li>
+                <li>GET /users: Get user stats (number of ratings, average rating)</li>
+            </ul>
+        </div>
+        <footer class="my-4 py-4 flex justify-center text-gray-400">
+            <span>
+                © 2023 :: <a href="https://github.com/enriktigasna" class="underline">Maxim Pavlenko</a>
+            </span>
+        </footer>
+    </div>
+</body>
+</html>
