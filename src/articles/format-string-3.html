@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <title>mackan.dev</title>
+        <title>mackan.dev - Format String 3</title>
         <link rel="stylesheet" href="/assets/css/tw-compiled.css" type="text/css" media="all" />
         <link rel="stylesheet" href="/assets/fonts/IBMPlex.css" type="text/css" media="all" />
     </head>
@@ -12,13 +12,15 @@
         </a>
         <div class="mt-8">
             <div class="max-w-2xl m-auto my-8">
-                <h1 class="font-mono text-gray-50 text-2xl mb-4 font-semibold"><a href="/articles/format-string-3">PicoCTF 2024 - Format String 3</a></h1>
+                <h1 class="font-mono text-gray-50 text-3xl mb-4 font-semibold"><a href="/articles/format-string-3">PicoCTF 2024 - Format String 3</a></h1>
                 <span class="text-sm text-gray-400">Jul 4, 2024</span>
+                <p class="text-gray-50">I want to preface this writeup by saying that I did this before I did format-string 1 and 2. This is because I, arrogantly, assumed that I already knew all about format string vulnerabilities and how they worked. Luckily I was wrong and learned a whole lot.</p>
+
+                <p>TODO: Finish article, and create md->article script</p>
                 <div class="font-mono text-sm my-2">
                     <span class="bg-yellow-500 px-2 py-0.5 rounded-sm">Writeup</span>
                     <span class="bg-yellow-500 px-2 py-0.5 rounded-sm">Binary Exploitation</span>
                 </div>
-                <p class="text-gray-50">Exploiting a format string vulnerability in a given binary, by analyzing stack layout and gaining arbitrary code execution, by careful leveraging of %n formats. These writes enable a ret2libc attack, where the Global Offset Table (GOT) entry for puts is redirected to system, ultimately allowing the execution of a shell command.</p>
             </div>
         </div>
     </body>
