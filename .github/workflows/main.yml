@@ -24,7 +24,11 @@ jobs:
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
-          bun run build
+          bun run build    
+      
+      - name: Create CNAME file
+        run: echo "mackan.dev" > build/CNAME
+      
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
