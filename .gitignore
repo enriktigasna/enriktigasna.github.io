@@ -1,17 +1,23 @@
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
+node_modules
 
-# Build output
-dist/
-build/
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
 
-# Environment variables
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
+.env.*
+!.env.example
+!.env.test
 
-# IDE files
-.vscode/
-.idea/
-
-src/assets/css/tw-compiled.css
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
