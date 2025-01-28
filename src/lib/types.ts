@@ -11,5 +11,5 @@ export type PostMetadata = {
 
 export type Post = {
 	content: Component;
-	meta: PostMetadata; // Fix
+	meta: PostMetadata;
 };
