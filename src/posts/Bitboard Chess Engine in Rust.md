@@ -11,6 +11,8 @@ published: true
 ---
 
 ## Introduction
+P.S, [here](https://www.linkedin.com/feed/update/urn:li:activity:7291126535204343808/)'s my linkedin post about the engine
+
 I originally started this project when watching <a href="https://www.youtube.com/watch?v=w4FFX_otR-4">this</a> video, and I was really intrigued by the idea of creating a chess engine that can beat anyone. I have already had my fair share of experience with different algorithms, and dipped my feet into competitive programming, so this really felt like the perfect project. Before we get into the technical stuff, I'll show a demonstration of an engine-vs-engine game. This is a game against maia9, a AI-based engine based on games of 1900-rated players.
 
 <iframe src="https://lichess.org/embed/game/nQ4lPNn1?theme=auto&bg=auto#0"
