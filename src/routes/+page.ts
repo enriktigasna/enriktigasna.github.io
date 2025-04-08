@@ -7,7 +7,8 @@ export const load: PageLoad = async (): Promise<{ posts: PostMetadata[] }> => {
 
 	const posts: PostMetadata[] = Object.entries(postFiles)
 		.map(([, module]) => module.metadata)
-		.filter((a) => a.published == true);
+		.filter((a) => a.published == true)
+    .sort((a, b) => a.date < b.date);
 
 	return { posts };
 };
